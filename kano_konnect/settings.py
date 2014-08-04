@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # External
     'south',
+    'simple_history',
     # Local
     'fm',
 )

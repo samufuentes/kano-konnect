@@ -1,20 +1,23 @@
 from django.contrib import admin
+
+from simple_history.admin import SimpleHistoryAdmin
+
 from fm.models import Area, Facility, FacilityImage, Contact, Role
 
-class AreaAdmin(admin.ModelAdmin):
+class AreaAdmin(SimpleHistoryAdmin):
     pass
 
 class FacilityImageInline(admin.TabularInline):
     model = FacilityImage
 
-class FacilityAdmin(admin.ModelAdmin):
+class FacilityAdmin(SimpleHistoryAdmin):
     list_display = ('facility_name', 'facility_type', 'facility_status', 'facility_area')
     inlines = [FacilityImageInline]
 
-class ContactAdmin(admin.ModelAdmin):
+class ContactAdmin(SimpleHistoryAdmin):
     pass
 
-class RoleAdmin(admin.ModelAdmin):
+class RoleAdmin(SimpleHistoryAdmin):
     pass
 
 admin.site.register(Area, AreaAdmin)
