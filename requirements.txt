@@ -3,3 +3,4 @@ uwsgi
 celery
 fabric
 jsonfield==0.9.20
+pillow
