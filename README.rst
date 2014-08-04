@@ -8,6 +8,20 @@ Kano Konnect is the hub for contact information, facility management and aggrega
 * nginx
 * celery
 
+Installation guide
+~~~~~~~~~~~~~~~~~~
+
+Fork the repo. Clone it.
+Afterwards::
+
+    $ python manage.py syncdb
+    $ python manage.py migrate
+
+Remember to track your migrations with south.
+
+Installation production
+~~~~~~~~~~~~~~~~~~~~~~~
+
 The fabric script is tested with an Ubuntu 14.04 LTS created in Amazon from an AMI. Previous to running the script you need to obtain the .pem credentials for the remote server. In addition, to avoid password prompt, manually add the following to the /etc/sudoers of the remote server. Use sudo visudo to edit it::
 
     ubuntu ALL=(ALL) NOPASSWD: ALL
