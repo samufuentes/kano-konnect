@@ -10,6 +10,13 @@ AREA_TYPES = (
     ('Ward', 'Ward'),
 )
 
+class GenericFieldsMixin(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+    deleted_on = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        abstract = True
 
 class Area(models.Model):
     area_name = models.TextField()
@@ -57,7 +64,7 @@ class Facility(models.Model):
     facility_area = models.ForeignKey(Area, related_name='area_facilities',
                                       default=None, null=True, blank=True,
                                       on_delete=models.SET_NULL)
-    
+
     # Set help_text to something else than empty but still invisible so that
     # the JSONField does not set it to its custom default (we want nothing
     # displayed).
@@ -75,6 +82,12 @@ class Facility(models.Model):
             area = u' in %s' % unicode(self.facility_area)
         return u'%s%s%s' % (name, status, area)
 
+    class Meta:
+        verbose_name_plural = 'facilities'
+
+class FacilityImage(models.Model):
+    facility = models.ForeignKey(Facility)
+    image = models.ImageField(upload_to='facilities')
 
 class Contact(models.Model):
     contact_name = models.TextField()
