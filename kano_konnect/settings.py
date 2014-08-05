@@ -46,6 +46,8 @@ INSTALLED_APPS = (
     'simple_history',
     # Local
     'fm',
+    # Dev
+    'django_extensions',
 )
 
 MIDDLEWARE_CLASSES = (
