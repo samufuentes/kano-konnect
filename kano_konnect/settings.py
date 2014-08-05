@@ -41,8 +41,13 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # External
+    'south',
+    'simple_history',
     # Local
     'fm',
+    # Dev
+    'django_extensions',
 )
 
 MIDDLEWARE_CLASSES = (
