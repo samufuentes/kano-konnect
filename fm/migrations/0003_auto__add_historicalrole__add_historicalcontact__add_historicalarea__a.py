@@ -14,6 +14,7 @@ class Migration(SchemaMigration):
             ('created_at', self.gf('django.db.models.fields.DateTimeField')(blank=True)),
             ('modified_at', self.gf('django.db.models.fields.DateTimeField')(blank=True)),
             ('deleted_on', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+            ('changed_by_id', self.gf('django.db.models.fields.IntegerField')(db_index=True, null=True, blank=True)),
             ('role_name', self.gf('django.db.models.fields.CharField')(max_length=64)),
             ('role_contact_id', self.gf('django.db.models.fields.IntegerField')(default=None, null=True, db_index=True, blank=True)),
             ('role_facility_id', self.gf('django.db.models.fields.IntegerField')(default=None, null=True, db_index=True, blank=True)),
@@ -30,6 +31,7 @@ class Migration(SchemaMigration):
             ('created_at', self.gf('django.db.models.fields.DateTimeField')(blank=True)),
             ('modified_at', self.gf('django.db.models.fields.DateTimeField')(blank=True)),
             ('deleted_on', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+            ('changed_by_id', self.gf('django.db.models.fields.IntegerField')(db_index=True, null=True, blank=True)),
             ('contact_name', self.gf('django.db.models.fields.TextField')()),
             ('contact_phone', self.gf('django.db.models.fields.CharField')(max_length=32)),
             ('contact_email', self.gf('django.db.models.fields.EmailField')(max_length=75)),
@@ -47,6 +49,7 @@ class Migration(SchemaMigration):
             ('created_at', self.gf('django.db.models.fields.DateTimeField')(blank=True)),
             ('modified_at', self.gf('django.db.models.fields.DateTimeField')(blank=True)),
             ('deleted_on', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+            ('changed_by_id', self.gf('django.db.models.fields.IntegerField')(db_index=True, null=True, blank=True)),
             ('area_name', self.gf('django.db.models.fields.TextField')()),
             ('area_type', self.gf('django.db.models.fields.CharField')(max_length=32)),
             ('area_parent_id', self.gf('django.db.models.fields.IntegerField')(default=None, null=True, db_index=True, blank=True)),
@@ -63,6 +66,7 @@ class Migration(SchemaMigration):
             ('created_at', self.gf('django.db.models.fields.DateTimeField')(blank=True)),
             ('modified_at', self.gf('django.db.models.fields.DateTimeField')(blank=True)),
             ('deleted_on', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+            ('changed_by_id', self.gf('django.db.models.fields.IntegerField')(db_index=True, null=True, blank=True)),
             ('facility_name', self.gf('django.db.models.fields.TextField')()),
             ('facility_type', self.gf('django.db.models.fields.CharField')(max_length=32)),
             ('facility_status', self.gf('django.db.models.fields.TextField')()),
@@ -74,6 +78,31 @@ class Migration(SchemaMigration):
             (u'history_type', self.gf('django.db.models.fields.CharField')(max_length=1)),
         ))
         db.send_create_signal(u'fm', ['HistoricalFacility'])
+
+        # Adding field 'Role.changed_by'
+        db.add_column(u'fm_role', 'changed_by',
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True),
+                      keep_default=False)
+
+        # Adding field 'FacilityImage.changed_by'
+        db.add_column(u'fm_facilityimage', 'changed_by',
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True),
+                      keep_default=False)
+
+        # Adding field 'Facility.changed_by'
+        db.add_column(u'fm_facility', 'changed_by',
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True),
+                      keep_default=False)
+
+        # Adding field 'Area.changed_by'
+        db.add_column(u'fm_area', 'changed_by',
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True),
+                      keep_default=False)
+
+        # Adding field 'Contact.changed_by'
+        db.add_column(u'fm_contact', 'changed_by',
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True),
+                      keep_default=False)
 
 
     def backwards(self, orm):
@@ -88,6 +117,21 @@ class Migration(SchemaMigration):
 
         # Deleting model 'HistoricalFacility'
         db.delete_table(u'fm_historicalfacility')
+
+        # Deleting field 'Role.changed_by'
+        db.delete_column(u'fm_role', 'changed_by_id')
+
+        # Deleting field 'FacilityImage.changed_by'
+        db.delete_column(u'fm_facilityimage', 'changed_by_id')
+
+        # Deleting field 'Facility.changed_by'
+        db.delete_column(u'fm_facility', 'changed_by_id')
+
+        # Deleting field 'Area.changed_by'
+        db.delete_column(u'fm_area', 'changed_by_id')
+
+        # Deleting field 'Contact.changed_by'
+        db.delete_column(u'fm_contact', 'changed_by_id')
 
 
     models = {
@@ -132,6 +176,7 @@ class Migration(SchemaMigration):
             'area_name': ('django.db.models.fields.TextField', [], {}),
             'area_parent': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'area_children'", 'on_delete': 'models.SET_NULL', 'default': 'None', 'to': u"orm['fm.Area']", 'blank': 'True', 'null': 'True'}),
             'area_type': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'changed_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True'}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'deleted_on': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -139,6 +184,7 @@ class Migration(SchemaMigration):
         },
         u'fm.contact': {
             'Meta': {'object_name': 'Contact'},
+            'changed_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True'}),
             'contact_email': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
             'contact_name': ('django.db.models.fields.TextField', [], {}),
             'contact_phone': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
@@ -150,6 +196,7 @@ class Migration(SchemaMigration):
         },
         u'fm.facility': {
             'Meta': {'object_name': 'Facility'},
+            'changed_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True'}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'deleted_on': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'facility_area': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'area_facilities'", 'on_delete': 'models.SET_NULL', 'default': 'None', 'to': u"orm['fm.Area']", 'blank': 'True', 'null': 'True'}),
@@ -162,6 +209,7 @@ class Migration(SchemaMigration):
         },
         u'fm.facilityimage': {
             'Meta': {'object_name': 'FacilityImage'},
+            'changed_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True'}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'deleted_on': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'facility': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['fm.Facility']"}),
@@ -174,6 +222,7 @@ class Migration(SchemaMigration):
             'area_name': ('django.db.models.fields.TextField', [], {}),
             'area_parent_id': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'db_index': 'True', 'blank': 'True'}),
             'area_type': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'changed_by_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'blank': 'True'}),
             'deleted_on': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             u'history_date': ('django.db.models.fields.DateTimeField', [], {}),
@@ -185,6 +234,7 @@ class Migration(SchemaMigration):
         },
         u'fm.historicalcontact': {
             'Meta': {'ordering': "(u'-history_date', u'-history_id')", 'object_name': 'HistoricalContact'},
+            'changed_by_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
             'contact_email': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
             'contact_name': ('django.db.models.fields.TextField', [], {}),
             'contact_phone': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
@@ -200,6 +250,7 @@ class Migration(SchemaMigration):
         },
         u'fm.historicalfacility': {
             'Meta': {'ordering': "(u'-history_date', u'-history_id')", 'object_name': 'HistoricalFacility'},
+            'changed_by_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'blank': 'True'}),
             'deleted_on': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'facility_area_id': ('django.db.models.fields.IntegerField', [], {'default': 'None', 'null': 'True', 'db_index': 'True', 'blank': 'True'}),
@@ -216,6 +267,7 @@ class Migration(SchemaMigration):
         },
         u'fm.historicalrole': {
             'Meta': {'ordering': "(u'-history_date', u'-history_id')", 'object_name': 'HistoricalRole'},
+            'changed_by_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'blank': 'True'}),
             'deleted_on': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             u'history_date': ('django.db.models.fields.DateTimeField', [], {}),
@@ -230,6 +282,7 @@ class Migration(SchemaMigration):
         },
         u'fm.role': {
             'Meta': {'object_name': 'Role'},
+            'changed_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True'}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'deleted_on': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
