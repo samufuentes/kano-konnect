@@ -3,6 +3,8 @@ from django.db import models
 from jsonfield import JSONField
 from simple_history.models import HistoricalRecords
 
+from ehealth_tools.django_tools.mixins import HistoryFieldsMixin
+
 AREA_TYPES = (
     ('State', 'State'),
     ('State Zone', 'State Zone'),
@@ -10,26 +12,7 @@ AREA_TYPES = (
     ('Ward', 'Ward'),
 )
 
-class GenericFieldsMixin(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now=True)
-    deleted_on = models.DateTimeField(blank=True, null=True)
-    changed_by = models.ForeignKey('auth.User', null=True, blank=True)
-
-    # Used by django-simple-history
-    @property
-    def _history_user(self):
-        return self.changed_by
-
-    @_history_user.setter
-    def _history_user(self, value):
-        self.changed_by = value
-    # END: Used by django-simple-history
-
-    class Meta:
-        abstract = True
-
-class Area(GenericFieldsMixin, models.Model):
+class Area(HistoryFieldsMixin, models.Model):
     area_name = models.TextField()
     area_type = models.CharField(max_length=32, choices=AREA_TYPES)
     area_parent = models.ForeignKey('self', related_name='area_children',
@@ -62,7 +45,7 @@ class Area(GenericFieldsMixin, models.Model):
             return u''
 
 
-class Facility(GenericFieldsMixin, models.Model):
+class Facility(HistoryFieldsMixin, models.Model):
     FACILITY_TYPES = (
         ('State Store',) * 2,
         ('Zonal Store',) * 2,
@@ -98,11 +81,11 @@ class Facility(GenericFieldsMixin, models.Model):
     class Meta:
         verbose_name_plural = 'facilities'
 
-class FacilityImage(GenericFieldsMixin, models.Model):
+class FacilityImage(HistoryFieldsMixin, models.Model):
     facility = models.ForeignKey(Facility)
     image = models.ImageField(upload_to='facilities')
 
-class Contact(GenericFieldsMixin, models.Model):
+class Contact(HistoryFieldsMixin, models.Model):
     contact_name = models.TextField()
     contact_phone = models.CharField(max_length=32)
     contact_email = models.EmailField()
@@ -120,7 +103,7 @@ class Contact(GenericFieldsMixin, models.Model):
         return unicode(self.contact_name + email)
 
 
-class Role(GenericFieldsMixin, models.Model):
+class Role(HistoryFieldsMixin, models.Model):
     ROLE_NAMES = (
         ('SCCO',) * 2,
         ('ZCCO',) * 2,
