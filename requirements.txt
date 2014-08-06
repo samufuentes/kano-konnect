@@ -7,5 +7,7 @@ pillow
 south
 django-simple-history
 -e git+https://github.com/eHealthAfrica/ehealth-tools.git#egg=EhealthTools
+django-tastypie
+django-tastypie-swagger
 # Dev
 django-extensions

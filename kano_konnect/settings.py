@@ -44,6 +44,8 @@ INSTALLED_APPS = (
     # External
     'south',
     'simple_history',
+    'tastypie',
+    'tastypie_swagger',
     # Local
     'fm',
     # Dev
@@ -100,3 +102,6 @@ MEDIA_ROOT = os.path.normpath(os.path.join(BASE_DIR, 'media'))
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = '/media/'
 ########## END MEDIA CONFIGURATION
+
+# https://github.com/minism/django-tastypie-swagger
+TASTYPIE_SWAGGER_API_MODULE = 'kano_konnect.urls.v1_api'
