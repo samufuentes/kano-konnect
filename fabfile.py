@@ -4,25 +4,46 @@ from fabric.api import *
 
 #env.hosts = ['ubuntu@10.211.55.6']
 
+# Notes: for the first deployment there are two steps. In the middle you need to manually configure the postgres DB,
+# following these instructions: https://help.ubuntu.com/community/PostgreSQL
+# If you want celery or PostGIS support you need to uncomment relevant lines. Search for 'PostGIS' and/or 'Celery'
+# This script installs web server under user 'ubuntu', installs project and a couple of logs in home dir. Feel free to modify.
+# For further deployments after the first one use the following command: deploy
+
 path, project_name = os.path.split(os.getcwd())
-git_repo_remote = 'https://github.com/samufuentes/kano_konnect.git'
+git_repo_remote = 'https://github.com/samufuentes/kano-konnect.git'
 
 @task
 def install_dependancies():
     # To avoid password prompt manually add the following to the
     # /etc/sudoers. Use sudo visudo to edit it
     # ubuntu ALL=(ALL) NOPASSWD: ALL
+    # If you're working on amazon instance maybe you don't need this
 
+    # Update sources and install security upgrades
+    sudo("apt-get update")
+    sudo("unattended-upgrade")
+
+    # Installation tools
     sudo("apt-get -y install build-essential")
     sudo("apt-get -y install python-dev")
-
-    sudo("apt-get -y install nginx")
-    sudo("apt-get -y install rabbitmq-server")
-
     sudo("apt-get -y install git-core")
     sudo("apt-get -y install python-setuptools")
     sudo("easy_install pip")
     sudo("pip install virtualenv")
+
+    # Web server and services
+    sudo("apt-get -y install nginx")
+    # Celery
+    # sudo("apt-get -y install rabbitmq-server")
+
+    # DB: PostgreSQL
+    sudo("apt-get -y install libpq-dev libxml2 libxml2-dev")
+    sudo("apt-get -y install postgresql postgresql-contrib postgresql-server-dev-9.3")
+    # PostGIS
+    # sudo("apt-get -y install postgresql-9.3-postgis-2.1")
+    # PgAdmin
+    #sudo("apt-get -y install pgadmin3")
 
 @task
 def create_env():
@@ -41,28 +62,54 @@ def configure_server():
         sudo("cp production_files/nginx_example /etc/nginx/sites-available")
         sudo("rm /etc/nginx/sites-enabled/default")
         sudo("ln -s /etc/nginx/sites-available/nginx_example /etc/nginx/sites-enabled/nginx_example")
-        sudo("cp production_files/celery.conf /etc/init/celery.conf")
+        # Celery
+        # sudo("cp production_files/celery.conf /etc/init/celery.conf")
+
+@task
+def create_static_dir():
+    with settings(warn_only=True):
+        sudo("mkdir /var/www")
+        sudo("mkdir /var/www/static")
+    sudo("chown ubuntu /var/www/static")
+
+@task
+def deploy_static():
+    with cd(project_name):
+        run('env/bin/python manage.py collectstatic -v0 --noinput')
 
 @task
 def reload_services():
     sudo("service nginx reload")
     sudo("service uwsgi reload")
-    sudo("service celery restart")
+    # Celery
+    # sudo("service celery restart")
 
 @task
 def restart_services():
     sudo("service nginx restart")
     sudo("service uwsgi restart")
-    sudo("service celery restart")
+    # Celery
+    # sudo("service celery restart")
 
 @task
-def first_deploy():
+def first_deploy_step1():
     install_dependancies()
     # Avoid rsa prompt
+    with settings(warn_only=True):
+        run('mkdir .ssh')
     run('echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config')
     run("git clone %s" %git_repo_remote)
     create_env()
     install_requirements()
+    create_static_dir()
+    deploy_static()
+    # Now install DB by hand, following instructions here: https://help.ubuntu.com/community/PostgreSQL
+
+@task 
+def first_deploy_step2():
+    with cd(project_name):
+        run("python manage.py syncdb")
+        run("python manage.py migrate")
     configure_server()
     restart_services()
 
@@ -75,6 +122,10 @@ def pull():
 def deploy():
     pull()
     install_requirements()
+    deploy_static()
+    with cd(project_name):
+        run("env/bin/python manage.py syncdb")
+        run("env/bin/python manage.py migrate")
     reload_services()
 
 @task
@@ -82,6 +133,9 @@ def auto_deploy():
     local_dir_name = os.path.dirname(os.path.realpath(__file__))
     local("cd %s; git pull origin master" %local_dir_name)
     local("cd %s; env/bin/pip install -r requirements.txt" %local_dir_name)
+    local("cd %s; env/bin/python manage.py syncdb" %local_dir_name)
+    local("cd %s; env/bin/python manage.py migrate" %local_dir_name)
     local("sudo service nginx reload")
     local("sudo service uwsgi reload")
-    local("sudo service celery restart")
+    # Celery
+    # local("sudo service celery restart")

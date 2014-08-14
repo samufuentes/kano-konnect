@@ -6,17 +6,39 @@ Kano Konnect is the hub for contact information, facility management and aggrega
 * Django 1.6
 * uwsgi
 * nginx
-* celery
+* PostgreSQL
 
-The fabric script is tested with an Ubuntu 14.04 LTS created in Amazon from an AMI. Previous to running the script you need to obtain the .pem credentials for the remote server. In addition, to avoid password prompt, manually add the following to the /etc/sudoers of the remote server. Use sudo visudo to edit it::
+Installation guide
+~~~~~~~~~~~~~~~~~~
+
+Fork the repo. Clone it.
+Afterwards::
+
+    $ python manage.py syncdb
+    $ python manage.py migrate
+
+Remember to track your migrations with south.
+
+Installation production
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The fabric script is tested with an Ubuntu 14.04 LTS created in Amazon from an AMI. Previous to running the script you need to obtain the .pem credentials for the remote server. In addition, to avoid password prompt, you might need to manually add the following to the /etc/sudoers of the remote server. Use sudo visudo to edit it::
 
     ubuntu ALL=(ALL) NOPASSWD: ALL
 
+For security reasons you need to manually define the secret key env variable on the server. It'll get used by this setting::
+
+    SECRET_KEY = get_env_setting('SECRET_KEY')
+
 You can trigger the first deployment on a new server entering the directory of the project in your local machine and running::
 
-    $ fab first_deploy -i /path/to/your.pem -H user@server
+    $ fab first_deploy_step1 -i /path/to/your.pem -H user@server
 
-Subsequent deploys go like this::
+Then configure manually the DB according to the following instructions (https://help.ubuntu.com/community/PostgreSQL) and run the next step::
+
+    $ fab first_deploy_step2 -i /path/to/your.pem -H user@server
+
+With that you should have a fully configured server. Subsequent deploys go like this::
 
     $ fab deploy -i /path/to/your.pem -H user@server
 
@@ -25,9 +47,7 @@ Important information
 
 There are examples of the configuration of the services in the folder "production_files". They use default values that you might want to adapt to your needs.
 
-The script is not doing anything with the statics or with the DB. You need to add those to the configuration.
-
-The Django settings are in DEBUG mode. Don't run in this mode in production.
+The Django settings are in DEBUG mode for the moment. Don't run in this mode in production.
 
 Auto-deploy
 ~~~~~~~~~~~
