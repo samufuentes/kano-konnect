@@ -4,7 +4,7 @@ server {
 
     location /static/ {    
         autoindex on;    
-        root   /home/ubuntu/kano_konnect/static/;    
+        root   /home/ubuntu/kano_konnect/;    
     }
 
 	location / {
