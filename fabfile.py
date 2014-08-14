@@ -109,7 +109,7 @@ def first_deploy():
         run('mkdir .ssh')
     run('echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config')
     run("git clone %s" %git_repo_remote)
-    sudo('sudo -u postgres createdb kano-konnect')
+    sudo('sudo -u postgres createdb kano_konnect')
     create_env()
     install_requirements()
     # create_static_dir()
