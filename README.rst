@@ -11,9 +11,10 @@ Kano Konnect is the hub for contact information, facility management and aggrega
 Installation guide
 ~~~~~~~~~~~~~~~~~~
 
-Fork the repo. Clone it. Create a virtualenv
+Fork the repo. Clone it. Create a virtualenv. Copy settings/local_example.py a settings/local.py and adjust as necessary.
 Afterwards::
 
+    $ touch log/kano.log
     $ pip install -r requirements.txt
     $ python manage.py syncdb
     $ python manage.py migrate

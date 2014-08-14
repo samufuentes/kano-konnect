@@ -114,6 +114,8 @@ def first_deploy():
         run('mkdir .ssh')
     run('echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config')
     run("git clone %s" %git_repo_remote)
+    with cd(project_name):
+        run("touch log/kano.log")
     generate_settings_file()
     sudo('sudo -u postgres createdb kano_konnect')
     create_env()

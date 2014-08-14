@@ -33,7 +33,7 @@ DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 # Your project root
-PROJECT_ROOT = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../../../")
+PROJECT_ROOT = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../../")
 
 # Recipients of traceback emails and other notifications.
 ADMINS = (

@@ -12,6 +12,8 @@ django-tastypie-swagger
 djangorestframework
 markdown
 django-filter
+# Prod
+psycopg2==2.5.2
 # Dev
 django-extensions
 #test
