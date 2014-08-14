@@ -1,7 +1,9 @@
 from django.db import models
 
 from jsonfield import JSONField
+from simple_history.models import HistoricalRecords
 
+from ehealth_tools.django_tools.mixins import HistoryFieldsMixin
 
 AREA_TYPES = (
     ('State', 'State'),
@@ -10,20 +12,13 @@ AREA_TYPES = (
     ('Ward', 'Ward'),
 )
 
-class GenericFieldsMixin(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now=True)
-    deleted_on = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        abstract = True
-
-class Area(models.Model):
+class Area(HistoryFieldsMixin, models.Model):
     area_name = models.TextField()
     area_type = models.CharField(max_length=32, choices=AREA_TYPES)
     area_parent = models.ForeignKey('self', related_name='area_children',
                                     default=None, null=True, blank=True,
                                     on_delete=models.SET_NULL)
+    history = HistoricalRecords()
 
     def __unicode__(self):
         return u'%s (%s%s)' % (self.area_name, self.area_type,
@@ -50,7 +45,7 @@ class Area(models.Model):
             return u''
 
 
-class Facility(models.Model):
+class Facility(HistoryFieldsMixin, models.Model):
     FACILITY_TYPES = (
         ('State Store',) * 2,
         ('Zonal Store',) * 2,
@@ -64,6 +59,7 @@ class Facility(models.Model):
     facility_area = models.ForeignKey(Area, related_name='area_facilities',
                                       default=None, null=True, blank=True,
                                       on_delete=models.SET_NULL)
+    history = HistoricalRecords()
 
     # Set help_text to something else than empty but still invisible so that
     # the JSONField does not set it to its custom default (we want nothing
@@ -85,14 +81,15 @@ class Facility(models.Model):
     class Meta:
         verbose_name_plural = 'facilities'
 
-class FacilityImage(models.Model):
+class FacilityImage(HistoryFieldsMixin, models.Model):
     facility = models.ForeignKey(Facility)
     image = models.ImageField(upload_to='facilities')
 
-class Contact(models.Model):
+class Contact(HistoryFieldsMixin, models.Model):
     contact_name = models.TextField()
     contact_phone = models.CharField(max_length=32)
     contact_email = models.EmailField()
+    history = HistoricalRecords()
     # Set help_text to something else than empty but still invisible so that
     # the JSONField does not set it to its custom default (we want nothing
     # displayed).
@@ -106,7 +103,7 @@ class Contact(models.Model):
         return unicode(self.contact_name + email)
 
 
-class Role(models.Model):
+class Role(HistoryFieldsMixin, models.Model):
     ROLE_NAMES = (
         ('SCCO',) * 2,
         ('ZCCO',) * 2,
@@ -121,6 +118,7 @@ class Role(models.Model):
                                      default=None, null=True, blank=False)
     role_facility = models.ForeignKey(Facility, related_name='facility_roles',
                                      default=None, null=True, blank=False)
+    history = HistoricalRecords()
 
     def __unicode__(self):
         if self.role_facility is None:

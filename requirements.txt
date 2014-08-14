@@ -4,5 +4,15 @@ celery
 fabric
 jsonfield==0.9.20
 pillow
+south
+django-simple-history
+-e git+https://github.com/eHealthAfrica/ehealth-tools.git#egg=EhealthTools
+django-tastypie
+django-tastypie-swagger
+djangorestframework
+markdown
+django-filter
+# Dev
+django-extensions
 #test
 django-nose
