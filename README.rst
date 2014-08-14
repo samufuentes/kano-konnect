@@ -6,14 +6,15 @@ Kano Konnect is the hub for contact information, facility management and aggrega
 * Django 1.6
 * uwsgi
 * nginx
-* celery
+* PostgreSQL
 
 Installation guide
 ~~~~~~~~~~~~~~~~~~
 
-Fork the repo. Clone it.
+Fork the repo. Clone it. Create a virtualenv
 Afterwards::
 
+    $ pip install -r requirements.txt
     $ python manage.py syncdb
     $ python manage.py migrate
 
@@ -22,15 +23,20 @@ Remember to track your migrations with south.
 Installation production
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-The fabric script is tested with an Ubuntu 14.04 LTS created in Amazon from an AMI. Previous to running the script you need to obtain the .pem credentials for the remote server. In addition, to avoid password prompt, manually add the following to the /etc/sudoers of the remote server. Use sudo visudo to edit it::
+The fabric script is tested with an Ubuntu 14.04 LTS created in Amazon from an AMI. Previous to running the script you need to obtain the .pem credentials for the remote server. In addition, to avoid password prompt, you might need to manually add the following to the /etc/sudoers of the remote server. Use sudo visudo to edit it::
 
     ubuntu ALL=(ALL) NOPASSWD: ALL
 
-You can trigger the first deployment on a new server entering the directory of the project in your local machine and running::
+For security reasons you need to manually define a couple of env variables on the server. They'll get used by these settings::
+
+    SECRET_KEY = get_env_setting('SECRET_KEY')
+    'PASSWORD': get_env_setting('DB_PASSWORD')
+
+Before the first deploy you need to get PostgresSQL DB running on the server (https://help.ubuntu.com/community/PostgreSQL). User should be postgres and password can be anything as long as it's the same in the env variable. You can afterwards trigger the first deployment on a new server entering the directory of the project in your local machine and running::
 
     $ fab first_deploy -i /path/to/your.pem -H user@server
 
-Subsequent deploys go like this::
+With that you should have a fully configured server. Subsequent deploys go like this::
 
     $ fab deploy -i /path/to/your.pem -H user@server
 
@@ -39,9 +45,7 @@ Important information
 
 There are examples of the configuration of the services in the folder "production_files". They use default values that you might want to adapt to your needs.
 
-The script is not doing anything with the statics or with the DB. You need to add those to the configuration.
-
-The Django settings are in DEBUG mode. Don't run in this mode in production.
+The Django settings are in DEBUG mode for the moment. Don't run in this mode in production.
 
 Auto-deploy
 ~~~~~~~~~~~
