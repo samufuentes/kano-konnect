@@ -12,18 +12,16 @@ from fabric.api import *
 
 path, project_name = os.path.split(os.getcwd())
 git_repo_remote = 'https://github.com/samufuentes/kano-konnect.git'
+user = 'ubuntu'
 
 @task
-def install_dependancies():
-    # To avoid password prompt manually add the following to the
-    # /etc/sudoers. Use sudo visudo to edit it
-    # ubuntu ALL=(ALL) NOPASSWD: ALL
-    # If you're working on amazon instance maybe you don't need this
-
+def run_security_updates(): 
     # Update sources and install security upgrades
     sudo("apt-get update")
     sudo("unattended-upgrade")
 
+@task
+def install_dependancies():
     # Installation tools
     sudo("apt-get -y install build-essential")
     sudo("apt-get -y install python-dev")
@@ -60,17 +58,18 @@ def configure_server():
     with cd(project_name):
         sudo("cp production_files/uwsgi.conf /etc/init/uwsgi.conf")
         sudo("cp production_files/nginx_example /etc/nginx/sites-available")
-        sudo("rm /etc/nginx/sites-enabled/default")
-        sudo("ln -s /etc/nginx/sites-available/nginx_example /etc/nginx/sites-enabled/nginx_example")
+        with settings(warn_only=True):
+            sudo("rm /etc/nginx/sites-enabled/default")
+            sudo("ln -s /etc/nginx/sites-available/nginx_example /etc/nginx/sites-enabled/nginx_example")
         # Celery
         # sudo("cp production_files/celery.conf /etc/init/celery.conf")
 
-@task
-def create_static_dir():
-    with settings(warn_only=True):
-        sudo("mkdir /var/www")
-        sudo("mkdir /var/www/static")
-    sudo("chown ubuntu /var/www/static")
+# @task
+# def create_static_dir():
+#     with settings(warn_only=True):
+#         sudo("mkdir /var/www")
+#         sudo("mkdir /var/www/static")
+#     sudo("chown ubuntu /var/www/static")
 
 @task
 def deploy_static():
@@ -92,24 +91,30 @@ def restart_services():
     # sudo("service celery restart")
 
 @task
-def first_deploy_step1():
+def update_db_schema():
+    with cd(project_name):
+        run("env/bin/python manage.py syncdb")
+        run("env/bin/python manage.py migrate")
+
+@task
+def first_deploy():   
+    # To avoid password prompt manually add the following to the
+    # /etc/sudoers. Use sudo visudo to edit it
+    # ubuntu ALL=(ALL) NOPASSWD: ALL
+    # If you're working on amazon instance maybe you don't need this
+    run_security_updates()
     install_dependancies()
     # Avoid rsa prompt
     with settings(warn_only=True):
         run('mkdir .ssh')
     run('echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config')
     run("git clone %s" %git_repo_remote)
+    sudo('sudo -u postgres createdb kano-konnect')
     create_env()
     install_requirements()
-    create_static_dir()
+    # create_static_dir()
     deploy_static()
-    # Now install DB by hand, following instructions here: https://help.ubuntu.com/community/PostgreSQL
-
-@task 
-def first_deploy_step2():
-    with cd(project_name):
-        run("python manage.py syncdb")
-        run("python manage.py migrate")
+    update_db_schema()
     configure_server()
     restart_services()
 
@@ -120,12 +125,11 @@ def pull():
 
 @task
 def deploy():
+    run_security_updates()
     pull()
     install_requirements()
     deploy_static()
-    with cd(project_name):
-        run("env/bin/python manage.py syncdb")
-        run("env/bin/python manage.py migrate")
+    update_db_schema()
     reload_services()
 
 @task

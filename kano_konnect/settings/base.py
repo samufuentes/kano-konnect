@@ -37,7 +37,7 @@ PROJECT_ROOT = os.path.join(os.path.abspath(os.path.dirname(__file__), "../../..
 
 # Recipients of traceback emails and other notifications.
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('Samuel Fuentes', 'samuel.fuentes@ehealthnigeria.org'),
 )
 MANAGERS = ADMINS
 
@@ -115,7 +115,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'kano_konnect',
-        'USER': 'ubuntu',
+        'USER': 'postgres',
         'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '5432',

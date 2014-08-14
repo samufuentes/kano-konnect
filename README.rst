@@ -11,9 +11,10 @@ Kano Konnect is the hub for contact information, facility management and aggrega
 Installation guide
 ~~~~~~~~~~~~~~~~~~
 
-Fork the repo. Clone it.
+Fork the repo. Clone it. Create a virtualenv
 Afterwards::
 
+    $ pip install -r requirements.txt
     $ python manage.py syncdb
     $ python manage.py migrate
 
@@ -26,17 +27,14 @@ The fabric script is tested with an Ubuntu 14.04 LTS created in Amazon from an A
 
     ubuntu ALL=(ALL) NOPASSWD: ALL
 
-For security reasons you need to manually define the secret key env variable on the server. It'll get used by this setting::
+For security reasons you need to manually define a couple of env variables on the server. They'll get used by these settings::
 
     SECRET_KEY = get_env_setting('SECRET_KEY')
+    'PASSWORD': get_env_setting('DB_PASSWORD')
 
-You can trigger the first deployment on a new server entering the directory of the project in your local machine and running::
+Before the first deploy you need to get PostgresSQL DB running on the server (https://help.ubuntu.com/community/PostgreSQL). User should be postgres and password can be anything as long as it's the same in the env variable. You can afterwards trigger the first deployment on a new server entering the directory of the project in your local machine and running::
 
-    $ fab first_deploy_step1 -i /path/to/your.pem -H user@server
-
-Then configure manually the DB according to the following instructions (https://help.ubuntu.com/community/PostgreSQL) and run the next step::
-
-    $ fab first_deploy_step2 -i /path/to/your.pem -H user@server
+    $ fab first_deploy -i /path/to/your.pem -H user@server
 
 With that you should have a fully configured server. Subsequent deploys go like this::
 
