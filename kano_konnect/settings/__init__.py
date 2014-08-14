@@ -1,4 +1,6 @@
 """ Settings for kano_konnect """
+from .base import *
+
 try:
     from .local import *
 except ImportError, exc:
