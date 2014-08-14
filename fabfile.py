@@ -97,6 +97,11 @@ def update_db_schema():
         run("env/bin/python manage.py migrate")
 
 @task
+def generate_settings_file():
+    with cd(project_name):
+        run('cp kano_konnect/settings/production.py kano_konnect/settings/local.py')
+
+@task
 def first_deploy():   
     # To avoid password prompt manually add the following to the
     # /etc/sudoers. Use sudo visudo to edit it
@@ -109,6 +114,7 @@ def first_deploy():
         run('mkdir .ssh')
     run('echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config')
     run("git clone %s" %git_repo_remote)
+    generate_settings_file()
     sudo('sudo -u postgres createdb kano_konnect')
     create_env()
     install_requirements()
@@ -127,6 +133,7 @@ def pull():
 def deploy():
     run_security_updates()
     pull()
+    generate_settings_file()
     install_requirements()
     deploy_static()
     update_db_schema()
