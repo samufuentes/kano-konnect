@@ -33,6 +33,14 @@ For security reasons you need to manually define a couple of env variables on th
     SECRET_KEY = get_env_setting('SECRET_KEY')
     'PASSWORD': get_env_setting('DB_PASSWORD')
 
+To do it create a file named /home/ubuntu/env.variables and define them in the format NAME=VARIABLE. If you want to have them available from 'env/bin/python manage.py shell' add the following to your .bashrc and source it::
+
+    # django settings
+    while read line
+    do
+        export line
+    done < /home/ubuntu/env.variables
+
 Before the first deploy you need to get PostgresSQL DB running on the server (https://help.ubuntu.com/community/PostgreSQL). User should be postgres and password can be anything as long as it's the same in the env variable. You can afterwards trigger the first deployment on a new server entering the directory of the project in your local machine and running::
 
     $ fab first_deploy -i /path/to/your.pem -H user@server
