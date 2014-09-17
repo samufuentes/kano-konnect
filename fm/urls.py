@@ -1,5 +1,3 @@
-__author__ = 'grillazz'
-
 from django.conf.urls import patterns, url
 
 from views import areaListView, areaDetailView, facilityListView

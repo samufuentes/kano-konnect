@@ -1,5 +1,3 @@
-__author__ = 'grillazz'
-
 from models import Facility, Area
 from rest_framework import serializers
 

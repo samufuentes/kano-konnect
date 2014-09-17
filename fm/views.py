@@ -1,5 +1,3 @@
-__author__ = 'grillazz'
-
 # Create your views here.
 
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
