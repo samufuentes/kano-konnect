@@ -200,3 +200,16 @@ LOGGING = {
         },
     }
 }
+
+########## REST_FRAMEWORK CONFIGURATION
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework.authentication.BasicAuthentication',),
+    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',
+                                 'rest_framework.renderers.BrowsableAPIRenderer',
+                                  'rest_framework.renderers.XMLRenderer'
+                                   ),
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+    'PAGINATE_BY': 10,
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
+}
+########## END REST_FRAMEWORK CONFIGURATION

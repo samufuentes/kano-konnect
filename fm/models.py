@@ -1,6 +1,6 @@
 from django.db import models
 
-from jsonfield import JSONField
+# from jsonfield import JSONField
 from simple_history.models import HistoricalRecords
 
 from ehealth_tools.django_tools.mixins import HistoryFieldsMixin
@@ -64,7 +64,7 @@ class Facility(HistoryFieldsMixin, models.Model):
     # Set help_text to something else than empty but still invisible so that
     # the JSONField does not set it to its custom default (we want nothing
     # displayed).
-    json = JSONField(null=True, blank=True, help_text=' ')
+    # json = JSONField(null=True, blank=True, help_text=' ')
 
     def __unicode__(self):
         name = str(self.facility_name)
@@ -93,7 +93,7 @@ class Contact(HistoryFieldsMixin, models.Model):
     # Set help_text to something else than empty but still invisible so that
     # the JSONField does not set it to its custom default (we want nothing
     # displayed).
-    json = JSONField(null=True, blank=True, help_text=' ')
+    # json = JSONField(null=True, blank=True, help_text=' ')
 
     def __unicode__(self):
         if self.contact_email:
