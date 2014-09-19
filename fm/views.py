@@ -18,5 +18,22 @@ class areaDetailView(RetrieveUpdateDestroyAPIView):
 class facilityListView(ListAPIView):
     queryset = Facility.objects.all()
     serializer_class = facilitySerializer
-    filter_fields = ('facility_area__area_name',)
+    filter_fields = ('facility_area__area_name', 'facility_area__id')
 
+
+class facilitiesByLGAListView(ListAPIView):
+    queryset = Facility.objects.filter(facility_area__area_type="LGA")
+    serializer_class = facilitySerializer
+    filter_fields = ('facility_area__area_name', 'facility_area__id')
+
+
+class facilitiesByZoneListView(ListAPIView):
+    queryset = Facility.objects.filter(facility_area__area_type="State Zone")
+    serializer_class = facilitySerializer
+    filter_fields = ('facility_area__area_name', 'facility_area__id')
+
+
+class facilitiesByWardListView(ListAPIView):
+    queryset = Facility.objects.filter(facility_area__area_type="Ward")
+    serializer_class = facilitySerializer
+    filter_fields = ('facility_area__area_name', 'facility_area__id')

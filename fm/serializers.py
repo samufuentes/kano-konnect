@@ -13,5 +13,5 @@ class facilitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Facility
-        fields = ('facility_name','facility_type','facility_status','facility_area',)
+        fields = ('facility_name', 'facility_type', 'facility_status', 'facility_area',)
         exclude = ('json',)

@@ -3,3 +3,5 @@ db.sqlite3
 media
 log/*.log
 kano_konnect/settings/local.py
+
+default.db
