@@ -82,14 +82,19 @@ class Facility(HistoryFieldsMixin, models.Model):
     class Meta:
         verbose_name_plural = 'facilities'
 
+
 class FacilityImage(HistoryFieldsMixin, models.Model):
     facility = models.ForeignKey(Facility)
     image = models.ImageField(upload_to='facilities')
+
 
 class Contact(HistoryFieldsMixin, models.Model):
     contact_name = models.TextField()
     contact_phone = models.CharField(max_length=32)
     contact_email = models.EmailField()
+    contact_area = models.ForeignKey(Area, related_name='area_contact',
+                                     default=None, null=True, blank=True,
+                                     on_delete=models.SET_NULL)
     history = HistoricalRecords()
     # Set help_text to something else than empty but still invisible so that
     # the JSONField does not set it to its custom default (we want nothing
