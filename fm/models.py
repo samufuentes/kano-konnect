@@ -1,6 +1,6 @@
 from django.db import models
 
-# from jsonfield import JSONField
+from jsonfield import JSONField
 from simple_history.models import HistoricalRecords
 
 from ehealth_tools.django_tools.mixins import HistoryFieldsMixin
@@ -11,6 +11,7 @@ AREA_TYPES = (
     ('LGA', 'LGA'),
     ('Ward', 'Ward'),
 )
+
 
 class Area(HistoryFieldsMixin, models.Model):
     area_name = models.TextField()
@@ -63,8 +64,8 @@ class Facility(HistoryFieldsMixin, models.Model):
 
     # Set help_text to something else than empty but still invisible so that
     # the JSONField does not set it to its custom default (we want nothing
-    # displayed).
-    # json = JSONField(null=True, blank=True, help_text=' ')
+    # displayed). verbose_name need to have JSONField working with DRF serializers/fields
+    json = JSONField(null=True, blank=True, help_text=' ', verbose_name='userJsonFiled')
 
     def __unicode__(self):
         name = str(self.facility_name)
@@ -81,19 +82,24 @@ class Facility(HistoryFieldsMixin, models.Model):
     class Meta:
         verbose_name_plural = 'facilities'
 
+
 class FacilityImage(HistoryFieldsMixin, models.Model):
     facility = models.ForeignKey(Facility)
     image = models.ImageField(upload_to='facilities')
+
 
 class Contact(HistoryFieldsMixin, models.Model):
     contact_name = models.TextField()
     contact_phone = models.CharField(max_length=32)
     contact_email = models.EmailField()
+    contact_area = models.ForeignKey(Area, related_name='area_contact',
+                                     default=None, null=True, blank=True,
+                                     on_delete=models.SET_NULL)
     history = HistoricalRecords()
     # Set help_text to something else than empty but still invisible so that
     # the JSONField does not set it to its custom default (we want nothing
-    # displayed).
-    # json = JSONField(null=True, blank=True, help_text=' ')
+    # displayed). verbose_name need to have JSONField working with DRF serializers/fields
+    json = JSONField(null=True, blank=True, help_text=' ', verbose_name='userJsonFiled')
 
     def __unicode__(self):
         if self.contact_email:
